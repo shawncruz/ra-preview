@@ -1,6 +1,5 @@
 import os
 
-import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from spotipy.cache_handler import CacheFileHandler
 import boto3
@@ -13,7 +12,6 @@ SPOTIPY_REDIRECT_URI = "http://127.0.0.1:9090"
 dynamodb = boto3.resource("dynamodb")
 ra_preview_table = dynamodb.Table("ra-preview")
 scope = "playlist-modify-public"
-
 
 def handle(event, context):
     cache_handler = CacheFileHandler(username=SPOTIPY_USERNAME)
