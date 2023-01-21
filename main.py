@@ -6,6 +6,9 @@ from spotify_service import SpotifyService
 def handle(event, context):
     ra_service = RAService()
     spotify_service = SpotifyService()
+    # Potential Optimization: If this runs daily, then after the first run we should only be looking at the listings
+    # one day after the previous end_date window. Downside here is that if events were added / removed, we will miss them.
+    # For now, leave as is unless performance is severly impacted.
     start_date = datetime.utcnow()
     end_date = datetime.utcnow() + timedelta(weeks=2)
     artist_names = ra_service.get_artists(

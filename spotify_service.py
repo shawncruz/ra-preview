@@ -65,6 +65,11 @@ class SpotifyService:
         # FIXME: This kinda sucks. Instead we should just be able to pass in a custom encoder to the cache handler.
         self.sp.auth_manager.cache_handler.save_token_to_cache(json.loads(json.dumps(token, cls=DecimalEncoder)))
 
+    # TODO: Move to util
+    def chunk(self, c, n):
+        for i in range(0, len(c), n):
+            yield c[i:i+n]
+
     def update_playlist(self, artist_names, start_date, end_date):
         artist_ids = set()
         for artist_name in set(artist_names):
@@ -87,7 +92,13 @@ class SpotifyService:
                 )
 
         # FIXME: This playlist ID should be dynamic, based on region
-        self.sp.playlist_replace_items("73p99duLkd9Cu5zNuUfcEU", top_track_ids)
+
+        # FIXME: Hack to clear playlist, then update with multiple update request chunks
+        self.sp.playlist_replace_items("73p99duLkd9Cu5zNuUfcEU", [top_track_ids.pop()])
+
+        for track_id_chunk in self.chunk(list(top_track_ids), 100):
+            self.sp.playlist_add_items("73p99duLkd9Cu5zNuUfcEU", track_id_chunk)
+        
         self.sp.playlist_change_details(
             "73p99duLkd9Cu5zNuUfcEU",
             name=None,

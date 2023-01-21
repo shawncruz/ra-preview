@@ -62,21 +62,31 @@ class RAService:
         """
         )
 
-        params = {
-            "filters": {
-                "areas": {"eq": area},
-                "listingDate": {
-                    "gte": start_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
-                    "lte": end_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+        page = 1
+        pageSize = 100
+        maxPage = 10
+        names = []
+        while page < maxPage + 1:
+            params = {
+                "filters": {
+                    "areas": {"eq": area},
+                    "listingDate": {
+                        "gte": start_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+                        "lte": end_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+                    },
                 },
-            },
-            "pageSize": 100,
-            "page": 1,
-        }
-        # TODO: We need to page through all results if totalResults > pageSize
-        result = self.client.execute(query, variable_values=params)
-        return [
-            artist["name"]
-            for data in result["eventListings"]["data"]
-            for artist in data["event"]["artists"]
-        ]
+                "pageSize": pageSize,
+                "page": page,
+            }
+            result = self.client.execute(query, variable_values=params)
+            names.extend([
+                artist["name"]
+                for data in result["eventListings"]["data"]
+                for artist in data["event"]["artists"]
+            ])
+            if len(result['eventListings']['data']) < pageSize:
+                break
+            else:
+                page += 1
+
+        return names
