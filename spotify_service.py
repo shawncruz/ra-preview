@@ -104,5 +104,5 @@ class SpotifyService:
             name=None,
             public=None,
             collaborative=None,
-            description=f"Preview of all songs from artists playing in NYC between {start_date.strftime('%D')}-{end_date.strftime('%D')}. Updated daily.",
+            description=f"Preview of top songs from artists playing upcoming shows in NYC between {start_date.strftime('%D')}-{end_date.strftime('%D')}. Based on data from Resident Advisor's events. Updated daily.",
         )
