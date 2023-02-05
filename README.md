@@ -10,3 +10,4 @@
 
 Future Improvements:
 - Add more regions
+- Add a way to link artist names to event pages so that listeners can easily hop to ra.co to purchase tickets.
