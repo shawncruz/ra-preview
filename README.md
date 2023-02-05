@@ -5,3 +5,8 @@
 **Solution:** `ra-preview` creates a playlist of artists who are playing in NYC within the next 2 week period. The playlist is updated daily.
 
 [NYC Playlist](https://open.spotify.com/playlist/73p99duLkd9Cu5zNuUfcEU)
+
+<hr />
+
+Future Improvements:
+- Add more regions
