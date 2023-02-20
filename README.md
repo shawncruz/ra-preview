@@ -1,8 +1,8 @@
 # ra-preview
 
-**Product Problem:** As a listener whose interested in finding live music, I want a central place to listen to the artists who will be playing near me soon.
+**Product Problem:** As a listener who's interested in finding live music, I want a centralized place to listen to the artists who will be playing near me.
 
-**Solution:** `ra-preview` creates a playlist of artists who are playing in NYC within the next 2 week period. The playlist is updated daily.
+**Solution:** `ra-preview` creates a playlist of artists who are playing in NYC over the next 2 week period. The playlist is updated daily.
 
 [NYC Playlist](https://open.spotify.com/playlist/73p99duLkd9Cu5zNuUfcEU)
 
