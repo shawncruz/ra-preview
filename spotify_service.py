@@ -16,15 +16,17 @@ dynamodb = boto3.resource("dynamodb")
 ra_preview_table = dynamodb.Table("ra-preview")
 scope = "playlist-modify-public"
 
+
 # Helper class to convert a DynamoDB item to JSON.
 class DecimalEncoder(json.JSONEncoder):
-    def default(self, o):  # pylint: disable=E0202
+    def default(self, o):
         if isinstance(o, decimal.Decimal):
             if o % 1 > 0:
                 return float(o)
             else:
                 return int(o)
         return super(DecimalEncoder, self).default(o)
+
 
 class SpotifyService:
     def __init__(self, restore_access_token=True) -> None:
@@ -34,7 +36,10 @@ class SpotifyService:
                 client_id=SPOTIPY_CLIENT_ID,
                 client_secret=SPOTIPY_CLIENT_SECRET,
                 redirect_uri=SPOTIPY_REDIRECT_URI,
-                cache_handler=CacheFileHandler(cache_path=f"/tmp/.cache-{SPOTIPY_USERNAME}"),
+                cache_handler=CacheFileHandler(
+                    cache_path=f"/tmp/.cache-{SPOTIPY_USERNAME}",
+                    encoder_cls=DecimalEncoder,
+                ),
             )
         )
         if restore_access_token:
@@ -48,27 +53,21 @@ class SpotifyService:
                 "value": self.sp.auth_manager.cache_handler.get_cached_token(),
             }
         )
-    
+
     def _restore_access_token(self):
         entry = ra_preview_table.get_item(
-            Key={
-                'type': 'token'
-            },
-            AttributesToGet=[
-                'value'
-            ]
+            Key={"type": "token"}, AttributesToGet=["value"]
         )
-        if 'Item' not in entry:
+        if "Item" not in entry:
             print("Token not found in db")
             return
-        token = entry['Item']['value']
-        # FIXME: This kinda sucks. Instead we should just be able to pass in a custom encoder to the cache handler.
-        self.sp.auth_manager.cache_handler.save_token_to_cache(json.loads(json.dumps(token, cls=DecimalEncoder)))
+        token = entry["Item"]["value"]
+        self.sp.auth_manager.cache_handler.save_token_to_cache(token)
 
     # TODO: Move to util
     def chunk(self, c, n):
         for i in range(0, len(c), n):
-            yield c[i:i+n]
+            yield c[i : i + n]
 
     def update_playlist(self, artist_names, start_date, end_date):
         artist_ids = set()
@@ -82,14 +81,12 @@ class SpotifyService:
                 == artist_name.casefold()
             ):
                 artist_ids.add(results["artists"]["items"][0]["id"])
-        
+
         top_track_ids = set()
         for artist_id in artist_ids:
             top_tracks_reponse = self.sp.artist_top_tracks(artist_id)
             if top_tracks_reponse["tracks"] and top_tracks_reponse["tracks"][0]:
-                top_track_ids.add(
-                    top_tracks_reponse["tracks"][0]["id"]
-                )
+                top_track_ids.add(top_tracks_reponse["tracks"][0]["id"])
 
         # FIXME: This playlist ID should be dynamic, based on region
 
@@ -98,7 +95,7 @@ class SpotifyService:
 
         for track_id_chunk in self.chunk(list(top_track_ids), 100):
             self.sp.playlist_add_items("73p99duLkd9Cu5zNuUfcEU", track_id_chunk)
-        
+
         self.sp.playlist_change_details(
             "73p99duLkd9Cu5zNuUfcEU",
             name=None,

@@ -2,6 +2,7 @@ import datetime
 from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
 
+
 class RAService:
     def __init__(
         self,
@@ -71,20 +72,22 @@ class RAService:
                 "filters": {
                     "areas": {"eq": area},
                     "listingDate": {
-                        "gte": start_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
-                        "lte": end_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+                        "gte": start_date.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                        "lte": end_date.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                     },
                 },
                 "pageSize": pageSize,
                 "page": page,
             }
             result = self.client.execute(query, variable_values=params)
-            names.extend([
-                artist["name"]
-                for data in result["eventListings"]["data"]
-                for artist in data["event"]["artists"]
-            ])
-            if len(result['eventListings']['data']) < pageSize:
+            names.extend(
+                [
+                    artist["name"]
+                    for data in result["eventListings"]["data"]
+                    for artist in data["event"]["artists"]
+                ]
+            )
+            if len(result["eventListings"]["data"]) < pageSize:
                 break
             else:
                 page += 1
