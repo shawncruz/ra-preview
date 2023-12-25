@@ -1,4 +1,4 @@
-black==23.1.0 # This doesn't need to be installed; move this to requirements-dev.txt file
-boto3==1.26.49
-git+https://github.com/spotipy-dev/spotipy.git@b3f308d
-gql[requests]==3.4.0
+# black==23.12.1 # This doesn't need to be installed; move this to requirements-dev.txt file
+boto3==1.34.7
+spotipy==2.23.0
+gql[requests]==3.4.1
