@@ -1,3 +1,4 @@
 notebooks/
 .cache*
 __pycache__/
+.venv/
